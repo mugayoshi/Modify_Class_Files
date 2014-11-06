@@ -12,7 +12,6 @@ public class Segundo {
 	public static void main(String[] args){
 		ClassPool cp = ClassPool.getDefault();
 		String classname = "Tercero";
-		//String methodname = "ex2";
 		Segundo s = new Segundo("Muga");
 		try {
 			CtClass cc = cp.get(classname);
@@ -20,26 +19,9 @@ public class Segundo {
 			System.out.println("Before For Loop");
 			for(int i = 0; i < methods.length; i++){
 				String methodName = methods[i].getName();
-				
 				if(s.checkMethod(methodName)){
-					
-					//System.out.println("Method " + i + ": " + methodName);
 					String str1 = "System.out.println(\"Method Name is " + methodName + " \" + $0.toString());";
-					//String str2 = "android.util.Log.d(\"Segundo.main \", \"hoo\");";
-					/*String str2 = "System.out.println(\"hoo \");";
-					String str3 = "System.out.println(\"foo\");";
-					String src = "{" + str1 + str2 + str3 + "}";
-					*/
-					//String[] parameters = getMethodParameters(methods[i]);
-					//CtClass[] paramType = getParameterTypes(methods[i]);
-					/*String src4 = new String();
-					for(int j = 0; j< parameters.length; j++){
-						System.out.println("parameter " + j + " " + parameters[j]);
-						//System.out.println("Type: " + paramType[j].getName());
-						
-					}*/
 					String parameterInfo = makeParametersString(methods[i]);
-					//System.out.println("Parameters of " + methods[i].getName() + " --> " + parameterInfo);
 					System.out.println(parameterInfo);
 					methods[i].insertBefore(parameterInfo);
 					methods[i].insertBefore(str1);
@@ -110,17 +92,14 @@ public class Segundo {
 			
 			String str = new String();
 			for(int i = 0; i < parameters.length; i++){
-				//str += "args[" + i + "]:"  + types[i].getName() + " " + parameters[i] + "= ";
-				str = "args[" + i + "]:"  + types[i].getName() + " " + parameters[i] + "= ";
-				
-				parameterInfo += "System.out.println(\"" + str + "\" + $args[" + i + "]);";
+						str = "args[" + i + "]:"  + types[i].getName() + " " + parameters[i] + "= ";
+						parameterInfo += "System.out.println(\"" + str + "\" + $args[" + i + "]);";
 			}
 			parameterInfo += "}";
 		}else{
 			return "System.out.println(\"No Parameter in This Method \");";
 		}
-		//return str;
-		return parameterInfo;
+				return parameterInfo;
 	}
 	public boolean checkMethod(String methodName){
 		if(methodName.equals("clone")){
