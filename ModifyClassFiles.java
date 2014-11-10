@@ -24,7 +24,8 @@ public class ModifyClassFiles {
 		// TODO Auto-generated method stub
 	
 		ModifyClassFiles modClassFile = new ModifyClassFiles();
-		modClassFile.input = "French_2.4-dex2jar";//"English_2.5.2_for_code_replace"
+		//modClassFile.input = "French_2.4-dex2jar";//"English_2.5.2_for_code_replace"
+		modClassFile.input = "iCalendar";
 		//modClassFile.input = "French_2.4-dex2jar/livio/pack/lang/fr_FR";//"English_2.5.2_for_code_replace"
 		String directoryPath = modClassFile.documentPath + modClassFile.input;
 		modClassFile.searchDirectory(directoryPath);
@@ -32,19 +33,17 @@ public class ModifyClassFiles {
 		
 		System.out.println("Classes Number: " + modClassFile.classFiles.size());
 		for(int i = 0; i < classNum; i++){
-//			for(int i = 0; i < classNum; i++){
 			String className = modClassFile.clsPckgNames.get(i);
 			int j = i + 1;
-			System.out.println(j + ":/ " + classNum+ " " +  className);
+			System.out.println(j + "/" + classNum+ " " +  className);
 			if(className.equals("ModifyClassFiles")){
 				System.out.println("Skip because this filename is itself");
 				break;
 			}
-			modClassFile.insertCodes(className);
+			//modClassFile.insertCodes(className);
 			
 		}
-		System.out.println("Writing Codes to Class Files has done !!");
-		//modClassFile.insertCodesIntoClasses();
+		//System.out.println("Writing Codes to Class Files has done !!");
 
 	}
 	
@@ -206,7 +205,7 @@ public class ModifyClassFiles {
 	}
 	
 	public boolean check(File file, String superclass){
-		if(file.isDirectory()){
+		if(file.isDirectory() && file.getPath().contains("com")){
 			//System.out.println("Directory: " + file.getName());
 			return false;
 		}
@@ -239,15 +238,14 @@ public class ModifyClassFiles {
 		packageName = packageName.substring(0, indexOfSuffix);
 		
 		if(superclass.equals("Anything")){
-			if(packageName.contains("android")){
+			/*if(packageName.contains("android")){
 				return ;
-			}
+			}*/
 			this.classFiles.add(file);
 			this.clsPckgNames.add(packageName);
 			return;
 		}
 		if(this.getSuperClass(packageName).equals(superclass)){
-		//	if(this.getSuperClass(packageName).equals("android.app.Activity")){
 			if(packageName.contains("android.")){
 				//if this class is android.* , it's not added to ArrayList (activity classes)
 				return;
