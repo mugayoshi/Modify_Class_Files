@@ -26,7 +26,6 @@ public class ModifyClassFiles {
 		ModifyClassFiles modClassFile = new ModifyClassFiles();
 		//modClassFile.input = "French_2.4-dex2jar";//"English_2.5.2_for_code_replace"
 		modClassFile.input = "iCalendar";
-		//modClassFile.input = "French_2.4-dex2jar/livio/pack/lang/fr_FR";//"English_2.5.2_for_code_replace"
 		String directoryPath = modClassFile.documentPath + modClassFile.input;
 		modClassFile.searchDirectory(directoryPath);
 		int classNum = modClassFile.classFiles.size();
@@ -40,28 +39,26 @@ public class ModifyClassFiles {
 				System.out.println("Skip because this filename is itself");
 				break;
 			}
-			//modClassFile.insertCodes(className);
+			modClassFile.insertCodes(className);
 			
 		}
-		//System.out.println("Writing Codes to Class Files has done !!");
+		System.out.println("Writing Codes to Class Files has done !!");
 
 	}
 	
 	
-	public void showActivityClasses(){
-		System.out.println("----- Classes whose super class is android.app.Activity ----");
-		System.out.println("Number of Activity Classes is  " + this.clsPckgNames.size());
+	public void showClasses(){
+		System.out.println("----- Begin of Show Classes  ----");
+		System.out.println("Number of Classes is  " + this.clsPckgNames.size());
 		for(int i = 0; i < this.classFiles.size(); i++){
 			String packageName = this.clsPckgNames.get(i);
 			/*if(packageName.contains("android.")){
 				continue;
 			}*/
-			//File file = this.activityClasses.get(i);
 			System.out.println("\n" + packageName + "\n"); 
-			//showMethods(packageName);
 			
 		}
-		System.out.println("----- End of Children Activity Classes ----");
+		System.out.println("----- End of Show Classes ----");
 
 	}
 	public String getSuperClass(String classname){
@@ -126,11 +123,8 @@ public class ModifyClassFiles {
 					String src2 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"method: " + methodname + " \");";
 					
 					String parameterInfo = makeParametersInfo(methods[i], cc);
-					//System.out.println("Method:" + methods[i].getName() + " Parameter Info: " + parameterInfo);
-					//String src3 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"Parameters of this method--> " + parameterInfo + " \");";
 					String src = "{" + src1 + src2 + "}";
 					methods[i].insertBefore(parameterInfo);
-					
 					methods[i].insertBefore(src);
 				}
 				
@@ -214,7 +208,6 @@ public class ModifyClassFiles {
 			addClassFile(file, superclass);
 		}
 		return true;
-//		this.modifiedClasses.add(file);
 	}
 	
 	public void addClassFile(File file, String superclass){
@@ -238,9 +231,6 @@ public class ModifyClassFiles {
 		packageName = packageName.substring(0, indexOfSuffix);
 		
 		if(superclass.equals("Anything")){
-			/*if(packageName.contains("android")){
-				return ;
-			}*/
 			this.classFiles.add(file);
 			this.clsPckgNames.add(packageName);
 			return;
@@ -279,7 +269,6 @@ public class ModifyClassFiles {
 	}
 	public String[] getMethodParameterNames(CtMethod cm, CtClass cc){
 		String[] paramNames = null;
-		 //CtClass cc = cm.getDeclaringClass();
 		try {
 			MethodInfo methodInfo = cm.getMethodInfo();
 			CodeAttribute codeAttr = methodInfo.getCodeAttribute();
