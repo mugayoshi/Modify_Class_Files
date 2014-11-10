@@ -11,14 +11,16 @@ public class ModifyClassFiles {
 	
 	ArrayList<File> classFiles;
 	ArrayList<String> clsPckgNames;
-	final String documentPath = "/Users/yoshikawamuga/Documents/";
+	String directoryPath;
 	final String log_tag = "ModifyClassFiles.main";
 	final String log_template = "android.util.Log.d(";
 	String input;
+	final String noSuperClass = "Anything";
 	public ModifyClassFiles(){
 		this.classFiles = new ArrayList<File>();
 		this.clsPckgNames = new ArrayList<String>();
 		input = new String();
+		directoryPath = "/Users/yoshikawamuga/Documents/";
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -26,7 +28,7 @@ public class ModifyClassFiles {
 		ModifyClassFiles modClassFile = new ModifyClassFiles();
 		//modClassFile.input = "French_2.4-dex2jar";//"English_2.5.2_for_code_replace"
 		modClassFile.input = "iCalendar";
-		String directoryPath = modClassFile.documentPath + modClassFile.input;
+		String directoryPath = modClassFile.directoryPath + modClassFile.input;
 		modClassFile.searchDirectory(directoryPath);
 		int classNum = modClassFile.classFiles.size();
 		
@@ -178,7 +180,7 @@ public class ModifyClassFiles {
 		File[] files = dir.listFiles();
 		for(int i = 0; i < files.length; i++){
 			File file = files[i];
-			if(check(file, "Anything") == false){
+			if(check(file, this.noSuperClass) == false){
 				searchDirectory(file.getAbsolutePath());
 			}
 			
@@ -224,13 +226,16 @@ public class ModifyClassFiles {
 		}
 		String packageName = new String();
 		for(int j = index + 1; j < dirs.length - 1; j++){
+			if(dirs[j].equals(".")){
+				continue;
+			}
 			packageName += dirs[j] + ".";
 		}
 		packageName += dirs[dirs.length - 1];
 		int indexOfSuffix = packageName.indexOf(".class");
 		packageName = packageName.substring(0, indexOfSuffix);
 		
-		if(superclass.equals("Anything")){
+		if(superclass.equals(this.noSuperClass)){
 			this.classFiles.add(file);
 			this.clsPckgNames.add(packageName);
 			return;
