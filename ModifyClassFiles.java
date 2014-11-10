@@ -56,7 +56,7 @@ public class ModifyClassFiles {
 			/*if(packageName.contains("android.")){
 				continue;
 			}*/
-			System.out.println("\n" + packageName + "\n"); 
+			System.out.println(packageName); 
 			
 		}
 		System.out.println("----- End of Show Classes ----");
@@ -216,6 +216,7 @@ public class ModifyClassFiles {
 		int index = 0;
 		
 		for(int i = 0; i < dirs.length; i++){
+			
 			if(dirs[i].contains(this.input)){
 				index = i;
 				break;
@@ -225,6 +226,9 @@ public class ModifyClassFiles {
 		for(int j = index + 1; j < dirs.length - 1; j++){
 			if(dirs[j].equals(".")){
 				continue;
+			}
+			if(dirs[j].contains("android")){
+				return ;
 			}
 			packageName += dirs[j] + ".";
 		}
