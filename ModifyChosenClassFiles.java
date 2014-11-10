@@ -6,14 +6,11 @@ public class ModifyChosenClassFiles extends ModifyClassFiles {
 	public ModifyChosenClassFiles(String[] args){
 		super();
 		//this.input = new File(".").getAbsolutePath();
-		this.directoryPath = new File(".").getAbsolutePath();
-		System.out.println("directory path:" + this.directoryPath);
 		this.modifiedClass = new String[args.length];
 		for(int i = 0; i < args.length; i++){
 			this.modifiedClass[i] = args[i];
 		}
-		String[] s = this.directoryPath.split("/");
-		this.input = s[s.length - 2];
+
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -22,8 +19,8 @@ public class ModifyChosenClassFiles extends ModifyClassFiles {
 			System.out.println("Usage: You Need to Input Class Files that You Wanna modify");
 			return ;
 		}
-		for(int i = 0; i < mccf.modifiedClass.length; i++)
-			System.out.println(mccf.modifiedClass[i]);
+		/*for(int i = 0; i < mccf.modifiedClass.length; i++)
+			System.out.println(mccf.modifiedClass[i]);*/
 		mccf.searchClassFile(mccf.directoryPath);
 		
 		mccf.showClasses();

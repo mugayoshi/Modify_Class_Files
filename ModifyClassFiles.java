@@ -20,16 +20,15 @@ public class ModifyClassFiles {
 		this.classFiles = new ArrayList<File>();
 		this.clsPckgNames = new ArrayList<String>();
 		input = new String();
-		directoryPath = "/Users/yoshikawamuga/Documents/";
+		this.directoryPath = new File(".").getAbsolutePath();
+		String[] s = this.directoryPath.split("/");
+		this.input = s[s.length - 2];
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 	
 		ModifyClassFiles modClassFile = new ModifyClassFiles();
-		//modClassFile.input = "French_2.4-dex2jar";//"English_2.5.2_for_code_replace"
-		modClassFile.input = "iCalendar";
-		String directoryPath = modClassFile.directoryPath + modClassFile.input;
-		modClassFile.searchDirectory(directoryPath);
+		modClassFile.searchDirectory(modClassFile.directoryPath);
 		int classNum = modClassFile.classFiles.size();
 		
 		System.out.println("Classes Number: " + modClassFile.classFiles.size());
@@ -201,7 +200,7 @@ public class ModifyClassFiles {
 	}
 	
 	public boolean check(File file, String superclass){
-		if(file.isDirectory() && file.getPath().contains("com")){
+		if(file.isDirectory()){
 			//System.out.println("Directory: " + file.getName());
 			return false;
 		}
@@ -215,9 +214,7 @@ public class ModifyClassFiles {
 	public void addClassFile(File file, String superclass){
 		String[] dirs = file.getPath().split("/");
 		int index = 0;
-		/*if(superclass.equals("Anything")){
-			str = "French_2.4-dex2jar";
-		}*/
+		
 		for(int i = 0; i < dirs.length; i++){
 			if(dirs[i].contains(this.input)){
 				index = i;
