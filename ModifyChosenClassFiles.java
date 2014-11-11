@@ -22,10 +22,16 @@ public class ModifyChosenClassFiles extends ModifyClassFiles {
 		/*for(int i = 0; i < mccf.modifiedClass.length; i++)
 			System.out.println(mccf.modifiedClass[i]);*/
 		mccf.searchClassFile(mccf.directoryPath);
-		
 		mccf.showClasses();
-		
-		
+		int classNum = mccf.classFiles.size();
+		for(int i = 0; i < classNum; i++){
+			String classPackageName = mccf.clsPckgNames.get(i);
+			int j = i + 1;
+			System.out.println(j + "/" + classNum+ " " +  classPackageName);
+			
+			mccf.insertCodes(classPackageName);
+		}
+		System.out.println("Insert Codes has Done");
 	}
 	public void searchClassFile(String dirPath){
 		

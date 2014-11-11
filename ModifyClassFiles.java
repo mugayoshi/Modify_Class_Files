@@ -230,6 +230,9 @@ public class ModifyClassFiles {
 			if(dirs[j].contains("android")){
 				return ;
 			}
+			if(dirs[j].indexOf("android") != -1){
+				return;
+			}
 			packageName += dirs[j] + ".";
 		}
 		packageName += dirs[dirs.length - 1];
