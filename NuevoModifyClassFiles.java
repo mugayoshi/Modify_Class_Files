@@ -1,12 +1,14 @@
 import javassist.*;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class NuevoModifyClassFiles extends ModifyClassFiles {
 	String[] inputWords;
-	String[] modifiedClass;
+	String[] inputClasses;
 	int matchMethodCount;
 	int matchClassCount;
+	ArrayList<String> insertedClass;
 	public NuevoModifyClassFiles(String[] args) {
 		// TODO Auto-generated constructor stub
 		super();
@@ -17,27 +19,60 @@ public class NuevoModifyClassFiles extends ModifyClassFiles {
 		}
 		matchClassCount = 0;
 		matchMethodCount = 0;
-		
+		insertedClass = new ArrayList<String>();
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		if(args.length < 1){
-			System.out.println("Usage: You need to input search words of methods you wanna insert into");
-			return ;
+		try{
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			System.out.print("Enter methods names you wanna insert: ");
+			String answer1 = br.readLine();
+			if(answer1.length() < 1){
+				System.out.println("You have to enter method names");
+				return;
+			}
+			NuevoModifyClassFiles nuevo = new NuevoModifyClassFiles(answer1.split(" "));
+			System.out.println("Do you wanna choose class this inserts codes ?");
+			System.out.print("Yes or No: ");
+			String answer = br.readLine();
+			if(answer.toLowerCase().equals("yes") || answer.toLowerCase().contains("y")){
+				System.out.println("Please tell me classes below " );
+				String c = br.readLine();
+				String[] classes = c.split(" ");
+				nuevo.inputClasses = new String[classes.length];
+				for(int i = 0; i < classes.length; i ++){
+					nuevo.inputClasses[i]  = classes[i];
+				}
+				nuevo.searchClassFile(nuevo.directoryPath);
+			}else{
+				nuevo.searchDirectory(nuevo.directoryPath);
+			}
+			
+			int classNum = nuevo.classFiles.size();
+			for(int i = 0; i < classNum; i++){
+				String classPackageName = nuevo.clsPckgNames.get(i);
+				int j = i + 1;
+				System.out.println(j + "/" + classNum+ " " +  classPackageName);
+				nuevo.insertCodes(classPackageName, nuevo.inputWords);
+			}
+			System.out.println("Count of Matches of Methods: " + nuevo.matchMethodCount);
+			System.out.println("Count of Matches of Classes: " + nuevo.matchClassCount);
+			nuevo.showInsertedClass();
+		}catch (IOException e){
+			System.out.println("IOException Occurred");
 		}
-		NuevoModifyClassFiles nuevo = new NuevoModifyClassFiles(args);
-		nuevo.searchDirectory(nuevo.directoryPath);
 		
-		int classNum = nuevo.classFiles.size();
-		for(int i = 0; i < classNum; i++){
-			String classPackageName = nuevo.clsPckgNames.get(i);
-			int j = i + 1;
-			System.out.println(j + "/" + classNum+ " " +  classPackageName);
-			nuevo.insertCodes(classPackageName, nuevo.inputWords);
-		}
-		System.out.println("Count of Match Method: " + nuevo.matchMethodCount);
+		
+		
 	
+	}
+	public void showInsertedClass(){
+		System.out.println("InsertedClass(ArrayList<String>), which this program inserted codes ");
+		for(int i = 0; i < this.insertedClass.size(); i++){
+			System.out.println(this.insertedClass.get(i));
+			
+		}
 	}
 	public void insertCodes(String className, String[] input){
 		ClassPool cp = ClassPool.getDefault();
@@ -74,28 +109,29 @@ public class NuevoModifyClassFiles extends ModifyClassFiles {
 					String src1 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"class: " + className + " \");";
 					String src2 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"method: " + methodname + " \");";
 					
-					/*String parameterInfo = makeParametersInfo(methods[i], cc);
+					String parameterInfo = makeParametersInfo(methods[i], cc);
 					String src = "{" + src1 + src2 + "}";
 					methods[i].insertBefore(parameterInfo);
-					methods[i].insertBefore(src);*/
+					methods[i].insertBefore(src);
 				}
 				
 			}
-			/*cc.writeFile();
-			cc.defrost();*/
+			this.insertedClass.add(className);
+			cc.writeFile();
+			cc.defrost();
 			System.out.println("Write File Succeeded in " + className);
 		} catch (NotFoundException e) {
 			System.out.println("Not Found Exception in insertCodes " + className);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}/* catch (CannotCompileException e) {
+		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
 			System.out.println("---- Cannpt Compile Exception in " + className + " ----");
 			e.printStackTrace();
-		}*//* catch (IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 	public void searchClassFile(String dirPath){
@@ -115,9 +151,10 @@ public class NuevoModifyClassFiles extends ModifyClassFiles {
 			return false;
 		}
 		//System.out.println("file name = " + fileName);
-		for(int i = 0; i < this.modifiedClass.length; i++){
-			if(fileName.indexOf(this.modifiedClass[i]) != -1 && fileName.contains(".class")){
+		for(int i = 0; i < this.inputClasses.length; i++){
+			if(fileName.indexOf(this.inputClasses[i]) != -1 && fileName.contains(".class")){
 				addClassFile(file, this.noSuperClass);
+				this.matchClassCount++;
 			}
 		}
 		return true;
