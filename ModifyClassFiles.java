@@ -227,20 +227,16 @@ public class ModifyClassFiles {
 			if(dirs[j].equals(".")){
 				continue;
 			}
-			if(dirs[j].contains("android")){
-				return ;
-			}
-			if(dirs[j].indexOf("android") != -1){
-				return;
-			}
-			if(j == index + 1){
-				return;
-			}
+
 			packageName += dirs[j] + ".";
 		}
 		packageName += dirs[dirs.length - 1];
 		int indexOfSuffix = packageName.indexOf(".class");
 		packageName = packageName.substring(0, indexOfSuffix);
+		
+		if(checkPackageName(packageName) == false){
+			return ;
+		}
 		
 		if(superclass.equals(this.noSuperClass)){
 			this.classFiles.add(file);
@@ -257,6 +253,20 @@ public class ModifyClassFiles {
 		}
 		return;
 	}
+	public boolean checkPackageName(String packageName){
+		String[] p = packageName.split("\\.");
+		//System.out.println(packageName + " Length of p is " + p.length);
+		for(int i = 0 ; i < p.length; i++){
+			if(i == 0 && p[i].contains("android")){
+				return false;
+			}
+			if(i == 0 && (p[i].indexOf("android") != -1)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public boolean checkMethod(String methodName){
 		if(methodName.equals("clone")){
 			return false;

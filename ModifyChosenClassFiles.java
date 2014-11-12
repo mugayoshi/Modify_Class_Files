@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 
 public class ModifyChosenClassFiles extends ModifyClassFiles {
@@ -16,22 +19,37 @@ public class ModifyChosenClassFiles extends ModifyClassFiles {
 		// TODO Auto-generated method stub
 		ModifyChosenClassFiles mccf = new ModifyChosenClassFiles(args);
 		if(args.length < 1){
-			System.out.println("Usage: You Need to Input Class Files that You Wanna modify");
+			System.out.println("Usage: You Need to Input Class Files that You're Looking for");
 			return ;
 		}
 		/*for(int i = 0; i < mccf.modifiedClass.length; i++)
 			System.out.println(mccf.modifiedClass[i]);*/
-		mccf.searchClassFile(mccf.directoryPath);
-		mccf.showClasses();
-		int classNum = mccf.classFiles.size();
-		for(int i = 0; i < classNum; i++){
-			String classPackageName = mccf.clsPckgNames.get(i);
-			int j = i + 1;
-			System.out.println(j + "/" + classNum+ " " +  classPackageName);
+		
+		
+		try{
+			mccf.searchClassFile(mccf.directoryPath);
+			mccf.showClasses();
+			System.out.println("Do you wanna insert codes ?");
+			System.out.print("yes or no: ");
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String answer = br.readLine();
+			if(answer.toLowerCase().contains("y") || answer.toLowerCase().equals("yes")){
+				int classNum = mccf.classFiles.size();
+				for(int i = 0; i < classNum; i++){
+					String classPackageName = mccf.clsPckgNames.get(i);
+					int j = i + 1;
+					System.out.println(j + "/" + classNum+ " " +  classPackageName);
+					
+					mccf.insertCodes(classPackageName);
+				}
+				System.out.println("Insert Codes has Done");
+			}else{
+				System.out.println("Done !");
+			}
+		}catch(IOException e){
 			
-			mccf.insertCodes(classPackageName);
 		}
-		System.out.println("Insert Codes has Done");
+		
 	}
 	public void searchClassFile(String dirPath){
 		
@@ -47,6 +65,7 @@ public class ModifyChosenClassFiles extends ModifyClassFiles {
 	public boolean checkFile(File file){
 		String fileName = file.getName();
 		if(file.isDirectory()){
+//			System.out.println("Directory: " + file.getName());
 			return false;
 		}
 		//System.out.println("file name = " + fileName);
