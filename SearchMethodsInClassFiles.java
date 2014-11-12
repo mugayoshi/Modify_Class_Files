@@ -184,6 +184,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 	}
 			
 	public void insertCodes(String className){
+		this.successInsert = 0;
 		ClassPool cp = ClassPool.getDefault();
 		try {
 			CtClass	cc = cp.get(className);
@@ -219,13 +220,14 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 					String src = "{" + src1 + src2 + "}";
 					methods[i].insertBefore(parameterInfo);
 					methods[i].insertBefore(src);
+					this.successInsert++;
 				}
 				
 			}
 			this.insertedClass.add(className);
 			cc.writeFile();
 			cc.defrost();
-			System.out.println("Write File Succeeded in " + className);
+			System.out.println("Write File Succeeded in " + className + this.successInsert + "/" + methods.length);
 		} catch (NotFoundException e) {
 			System.out.println("Not Found Exception in insertCodes " + className);
 			// TODO Auto-generated catch block

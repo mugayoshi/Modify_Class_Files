@@ -16,6 +16,7 @@ public class ModifyClassFiles {
 	final String log_template = "android.util.Log.d(";
 	String input;
 	final String noSuperClass = "Anything";
+	int successInsert;
 	public ModifyClassFiles(){
 		this.classFiles = new ArrayList<File>();
 		this.clsPckgNames = new ArrayList<String>();
@@ -23,6 +24,7 @@ public class ModifyClassFiles {
 		this.directoryPath = new File(".").getAbsolutePath();
 		String[] s = this.directoryPath.split("/");
 		this.input = s[s.length - 2];
+		this.successInsert = 0;
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -101,6 +103,7 @@ public class ModifyClassFiles {
 	}
 	public void insertCodes(String className){
 		//it insert codes into every method of this class
+		this.successInsert = 0;
 		ClassPool cp = ClassPool.getDefault();
 		try {
 			CtClass	cc = cp.get(className);
@@ -127,12 +130,13 @@ public class ModifyClassFiles {
 					String src = "{" + src1 + src2 + "}";
 					methods[i].insertBefore(parameterInfo);
 					methods[i].insertBefore(src);
+					this.successInsert++;
 				}
 				
 			}
 			cc.writeFile();
 			cc.defrost();
-			System.out.println("Write File Succeeded in " + className);
+			System.out.println("Write File Succeeded in " + className + this.successInsert + "/" + methods.length);
 		} catch (NotFoundException e) {
 			System.out.println("Not Found Exception in insertCodes " + className);
 			// TODO Auto-generated catch block
