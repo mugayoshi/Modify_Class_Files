@@ -17,21 +17,17 @@ public class SearchClassFiles extends ModifyClassFiles {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		SearchClassFiles mccf = new SearchClassFiles(args);
-		if(args.length < 1){
-			System.out.println("Usage: You Need to Input Class Files that You're Looking for");
-			return ;
-		}
-		/*for(int i = 0; i < mccf.modifiedClass.length; i++)
-			System.out.println(mccf.modifiedClass[i]);*/
-		
-		
 		try{
+			System.out.println("Enter class names you're looking for: ");
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String c = br.readLine();
+			String[] cs = c.split(" ");
+			SearchClassFiles mccf = new SearchClassFiles(cs);
 			mccf.searchClassFile(mccf.directoryPath);
 			mccf.showClasses();
 			System.out.println("Do you wanna insert codes ?");
 			System.out.print("yes or no: ");
-			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			
 			String answer = br.readLine();
 			if(answer.toLowerCase().contains("y") || answer.toLowerCase().equals("yes")){
 				int classNum = mccf.classFiles.size();
