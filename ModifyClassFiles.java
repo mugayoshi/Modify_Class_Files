@@ -107,6 +107,7 @@ public class ModifyClassFiles {
 		ClassPool cp = ClassPool.getDefault();
 		try {
 			CtClass	cc = cp.get(className);
+
 			//cc.defrost();
 			if(cc.isInterface()){
 				return ;
@@ -121,6 +122,16 @@ public class ModifyClassFiles {
 				/*if(methods[i].isEmpty())
 					continue;*/
 				String methodname = methods[i].getName();
+				String longName = methods[i].getLongName();
+				//remove methods that Thread class has except run
+				boolean run = false;
+				if(methodname.contains("run")){
+					run = true;
+				}
+				if(longName.contains("Thread") && !run){
+					//System.out.println("This Methods is from Thread Class");
+					continue;
+				}
 				if(this.checkMethod(methodname)){
 					//String src1 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"ths class is \" + $0.toString() );";
 					String src1 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"class: " + className + " \");";
@@ -130,13 +141,14 @@ public class ModifyClassFiles {
 					String src = "{" + src1 + src2 + "}";
 					methods[i].insertBefore(parameterInfo);
 					methods[i].insertBefore(src);
+					System.out.println("Methods[" + i + "] = " + methodname + " has Succeeded in Inserting");
 					this.successInsert++;
 				}
 				
 			}
 			cc.writeFile();
 			cc.defrost();
-			System.out.println("Write File Succeeded in " + className + this.successInsert + "/" + methods.length);
+			System.out.println("Write File Succeeded in " + className + ": " + this.successInsert + "/" + methods.length);
 		} catch (NotFoundException e) {
 			System.out.println("Not Found Exception in insertCodes " + className);
 			// TODO Auto-generated catch block
