@@ -62,6 +62,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 				nuevo.searchDirectory(nuevo.directoryPath);
 			}
 			System.out.println("Searching Done !");
+			nuevo.showClasses();
 			int classNum = nuevo.classFiles.size();
 			System.out.print("Do you wanna insert codes(1) or just look methods (2) ? --> ");
 			answer = br.readLine();
