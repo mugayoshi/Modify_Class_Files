@@ -58,11 +58,13 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 					nuevo.inputClasses[i]  = classes[i];
 				}
 				nuevo.searchClassFile(nuevo.directoryPath);
+				nuevo.showClasses();
 			}else{
+				System.out.println("I'm going to add all classes");
 				nuevo.searchDirectory(nuevo.directoryPath);
 			}
 			System.out.println("Searching Done !");
-			nuevo.showClasses();
+			
 			int classNum = nuevo.classFiles.size();
 			System.out.print("Do you wanna insert codes(1) or just look methods (2) ? --> ");
 			answer = br.readLine();
@@ -74,7 +76,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			}else if(answer.equals("2")){
 				for(int i = 0; i < classNum; i++){
 					String classPackageName = nuevo.clsPckgNames.get(i);
-					nuevo.searchAndShowMethods(classPackageName);
+					nuevo.searchMethods(classPackageName);
 				}
 			}else{
 				System.out.println("this number is wrong !!");
@@ -126,10 +128,23 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			return ;
 		}
 		System.out.println("InsertedClass(ArrayList<String>), which this program inserted codes ");
-		for(int i = 0; i < this.insertedClass.size(); i++){
-			System.out.println("- " + this.insertedClass.get(i));
-			
+		System.out.println("Number of Inserted Class is " + this.insertedMethods.size());
+		System.out.println("Do you wanna see all of them ?");
+		try{
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String ans = br.readLine();
+			if(ans.toLowerCase().contains("y")){
+				for(int i = 0; i < this.insertedClass.size(); i++){
+					System.out.println("- " + this.insertedClass.get(i));
+				}
+
+			}else{
+				return ;
+			}
+		}catch (IOException e){
+			System.out.println("IO Exception Occurred");
 		}
+
 	}
 	public void showInsertedMethods(){
 		if(this.insertedMethods.size() < 1){
@@ -137,13 +152,28 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			return ;
 		}
 		System.out.println("InsertedMethods(ArrayList<String>), which this program inserted codes ");
-		for(int i = 0; i < this.insertedMethods.size(); i++){
-			System.out.println("- " + this.insertedMethods.get(i));
-			
+		System.out.println("Number of Inserted Methods is " + this.insertedMethods.size());
+		System.out.println("Do you wanna see all of them ?");
+		try{
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String ans = br.readLine();
+			if(ans.toLowerCase().contains("y")){
+				for(int i = 0; i < this.insertedMethods.size(); i++){
+					System.out.println("- " + this.insertedMethods.get(i));
+					
+				}
+			}else{
+				return ;
+			}
+		}catch (IOException e){
+			System.out.println("IO Exception Occurred");
 		}
+		
+		
+		
 	}
 	
-	public void searchAndShowMethods(String className){
+	public void searchMethods(String className){
 		ClassPool cp = ClassPool.getDefault();
 		CtClass cc;
 		try {
@@ -180,6 +210,8 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (RuntimeException e){
+			System.out.println("Runtime Exception Occurred in " + className);
 		}
 		
 	}
@@ -240,6 +272,8 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch (RuntimeException e){
+			System.out.println("Runtime Exception Occurred in " + className);
 		}
 	}
 
