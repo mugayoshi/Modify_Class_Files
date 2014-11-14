@@ -45,7 +45,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 				return;
 			}
 			
-			SearchMethodsInClassFiles nuevo = new SearchMethodsInClassFiles(m.split(" "));
+			SearchMethodsInClassFiles search = new SearchMethodsInClassFiles(m.split(" "));
 			System.out.println("Do you wanna choose classes this program inserts codes ?");
 			System.out.print("Yes or No: ");
 			answer = br.readLine();
@@ -53,40 +53,40 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 				System.out.println("Please tell me classes below" );
 				c = br.readLine();
 				String[] classes = c.split(" ");
-				nuevo.inputClasses = new String[classes.length];
+				search.inputClasses = new String[classes.length];
 				for(int i = 0; i < classes.length; i ++){
-					nuevo.inputClasses[i]  = classes[i];
+					search.inputClasses[i]  = classes[i];
 				}
-				nuevo.searchClassFile(nuevo.directoryPath);
-				nuevo.showClasses();
+				search.searchClassFile(search.directoryPath);
+				search.showClasses();
 			}else{
 				System.out.println("I'm going to add all classes");
-				nuevo.searchDirectory(nuevo.directoryPath);
+				search.searchDirectory(search.directoryPath);
 			}
 			System.out.println("Searching Done !");
 			
-			int classNum = nuevo.classFiles.size();
+			int classNum = search.classFiles.size();
 			System.out.print("Do you wanna insert codes(1) or just look methods (2) ? --> ");
 			answer = br.readLine();
 			if(answer.equals("1")){
 				for(int i = 0; i < classNum; i++){
-					String classPackageName = nuevo.clsPckgNames.get(i);
-					nuevo.insertCodes(classPackageName);
+					String classPackageName = search.clsPckgNames.get(i);
+					search.insertCodes(classPackageName);
 				}
 			}else if(answer.equals("2")){
 				for(int i = 0; i < classNum; i++){
-					String classPackageName = nuevo.clsPckgNames.get(i);
-					nuevo.searchMethods(classPackageName);
+					String classPackageName = search.clsPckgNames.get(i);
+					search.searchMethods(classPackageName);
 				}
 			}else{
 				System.out.println("this number is wrong !!");
 				return ;
 			}
 			
-			System.out.println("Count of Matches of Methods for "+ m + ": " +  nuevo.matchMethodCount);
-			System.out.println("Count of Matches of Classes for" + c + ": " + nuevo.matchClassCount);
-			nuevo.showInsertedClass();
-			nuevo.showInsertedMethods();
+			System.out.println("Count of Matches of Methods for "+ m + ": " +  search.matchMethodCount);
+			System.out.println("Count of Matches of Classes for" + c + ": " + search.matchClassCount);
+			search.showInsertedClass();
+			search.showInsertedMethods();
 		}catch (IOException e){
 			System.out.println("IOException Occurred");
 		}
