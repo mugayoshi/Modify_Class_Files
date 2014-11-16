@@ -116,9 +116,6 @@ public class ModifyClassFiles {
 				return ;
 			}
 			CtMethod[] methods = cc.getMethods();
-			System.out.println("Insert Codes for " + className + "<- class");
-			System.out.println("Number of its Methods is " + methods.length);
-			
 			for(int i = 0; i < methods.length; i++){
 				/*if(methods[i].isEmpty())
 					continue;*/
@@ -142,7 +139,7 @@ public class ModifyClassFiles {
 					String src = "{" + src1 + src2 + "}";
 					methods[i].insertBefore(parameterInfo);
 					methods[i].insertBefore(src);
-					System.out.println("Methods[" + i + "] = " + methodname + " has Succeeded in Inserting");
+					//System.out.println("Methods[" + i + "] = " + methodname + " has Succeeded in Inserting");
 					this.successInsert++;
 				}
 				
