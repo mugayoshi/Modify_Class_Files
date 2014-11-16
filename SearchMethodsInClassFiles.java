@@ -33,23 +33,23 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			String m = br.readLine();
 			String answer;
 			String c = new String();
-			
+			SearchMethodsInClassFiles search;
 			if(m.length() < 1){
 				System.out.println("You have to enter method names");
 				return;
 			}
 			if(m.toLowerCase().equals("all")){
-				SearchMethodsInClassFiles nuevo = new SearchMethodsInClassFiles(m.split(" "));
-				nuevo.searchDirectory(nuevo.directoryPath);
-				nuevo.showAllMethods();
+				search = new SearchMethodsInClassFiles(m.split(" "));
+				search.searchDirectory(search.directoryPath);
+				search.showAllMethods();
 				return;
 			}
 			
-			SearchMethodsInClassFiles search = new SearchMethodsInClassFiles(m.split(" "));
+			search = new SearchMethodsInClassFiles(m.split(" "));
 			System.out.println("Do you wanna choose classes this program inserts codes ?");
 			System.out.print("Yes or No: ");
 			answer = br.readLine();
-			if(answer.toLowerCase().equals("yes") || answer.toLowerCase().contains("y")){
+			if(answer.toLowerCase().contains("y")){
 				System.out.println("Please tell me classes below" );
 				c = br.readLine();
 				String[] classes = c.split(" ");
@@ -71,7 +71,8 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			if(answer.equals("1")){
 				for(int i = 0; i < classNum; i++){
 					String classPackageName = search.clsPckgNames.get(i);
-					search.insertCodes(classPackageName);
+					if(search.avoidItself(classPackageName))
+						search.insertCodesIntoSomeMethods(classPackageName);
 				}
 			}else if(answer.equals("2")){
 				for(int i = 0; i < classNum; i++){
@@ -216,7 +217,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 		
 	}
 			
-	public void insertCodes(String className){
+	public void insertCodesIntoSomeMethods(String className){
 		this.successInsert = 0;
 		ClassPool cp = ClassPool.getDefault();
 		try {
@@ -229,6 +230,16 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			CtMethod[] methods = cc.getMethods();
 			for(int i = 0; i < methods.length; i++){
 				String methodname = methods[i].getName();
+				String longName = methods[i].getLongName();
+				//remove methods that Thread class has except run
+				boolean run = false;
+				if(methodname.contains("run")){
+					run = true;
+				}
+				if(longName.contains("Thread") && !run){
+					//System.out.println("This Methods is from Thread Class");
+					continue;
+				}
 				if(this.checkMethod(methodname)){
 					String lowerMethodName = methodname.toLowerCase();//to make it small characters
 					boolean match = false;
@@ -260,21 +271,21 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			this.insertedClass.add(className);
 			cc.writeFile();
 			cc.defrost();
-			System.out.println("Write File Succeeded in " + className + this.successInsert + "/" + methods.length);
+			System.out.println("Write File Succeeded in " + className + " " +  this.successInsert + "/" + methods.length);
 		} catch (NotFoundException e) {
 			System.out.println("Not Found Exception in insertCodes " + className);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
-			System.out.println("---- Cannpt Compile Exception in " + className + " ----");
+			System.out.println("Cannot Compile Exception in " + className);
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}catch (RuntimeException e){
+		}/*catch (RuntimeException e){
 			System.out.println("Runtime Exception Occurred in " + className);
-		}
+		}*/
 	}
 
 	public void searchClassFile(String dirPath){

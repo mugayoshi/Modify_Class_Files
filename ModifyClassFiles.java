@@ -42,8 +42,9 @@ public class ModifyClassFiles {
 				System.out.println("Skip because this filename is itself");
 				break;
 			}
-			modClassFile.insertCodes(className);
-			
+			if(modClassFile.avoidItself(className)){
+				modClassFile.insertCodesIntoAllMethods(className);
+			}
 		}
 		System.out.println("Writing Codes to Class Files has done !!");
 
@@ -101,7 +102,7 @@ public class ModifyClassFiles {
 		}
 		
 	}
-	public void insertCodes(String className){
+	public void insertCodesIntoAllMethods(String className){
 		//it insert codes into every method of this class
 		this.successInsert = 0;
 		ClassPool cp = ClassPool.getDefault();
@@ -368,6 +369,16 @@ public class ModifyClassFiles {
 
 		}
 		return parameterInfo;
+	}
+	public boolean avoidItself(String filename){
+		if(filename.toLowerCase().contains("modifyclassfiles")){
+			return false;
+		}else if(filename.toLowerCase().contains("searchmethod")){
+			return false;
+		}else if(filename.toLowerCase().contains("searchclass")){
+			return false;
+		}
+		return true;
 	}
 
 }

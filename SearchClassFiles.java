@@ -36,7 +36,7 @@ public class SearchClassFiles extends ModifyClassFiles {
 					int j = i + 1;
 					System.out.println(j + "/" + classNum+ " " +  classPackageName);
 					
-					mccf.insertCodes(classPackageName);
+					mccf.insertCodesIntoAllMethods(classPackageName);
 				}
 				System.out.println("Insert Codes has Done");
 			}else{
