@@ -128,7 +128,6 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			System.out.println("No InsertedClass\n");
 			return ;
 		}
-		System.out.println("InsertedClass(ArrayList<String>), which this program inserted codes ");
 		System.out.println("Number of Inserted Class is " + this.insertedMethods.size());
 		System.out.println("Do you wanna see all of them ?");
 		try{
@@ -152,7 +151,6 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			System.out.println("No InsertedMethods\n");
 			return ;
 		}
-		System.out.println("InsertedMethods(ArrayList<String>), which this program inserted codes ");
 		System.out.println("Number of Inserted Methods is " + this.insertedMethods.size());
 		System.out.println("Do you wanna see all of them ?");
 		try{
@@ -177,6 +175,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 	public void searchMethods(String className){
 		ClassPool cp = ClassPool.getDefault();
 		CtClass cc;
+		boolean flag = false;
 		try {
 			cc = cp.get(className);
 			if(cc.isInterface()){
@@ -198,6 +197,10 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 							//System.out.println(methodname + " matches with " + this.inputWords[j] + "!!!");
 							String info = methods[i].getName() + " in " + className;
 							this.insertedMethods.add(info);
+							if(flag == false){
+								flag = true;
+								this.insertedClass.add(className);
+							}
 							break;
 						}
 					}
