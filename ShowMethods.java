@@ -36,7 +36,7 @@ public class ShowMethods extends SearchClassFiles {
 			for(int i = 0; i < methods.length; i++){
 				String methodname = methods[i].getName();
 				if(this.checkMethod(methodname))
-					System.out.println(methodname);
+					System.out.println(methodname + " <- " +  methods[i].getLongName());
 			}
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
