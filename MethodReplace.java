@@ -114,7 +114,7 @@ public class MethodReplace extends ModifyClassFiles {
 		
 	}
 	public String makeStatement(String className, String checkedMethod){
-		String log = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", "
+		String log = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", "
 				+ "$0.toString() + \" is Executing following method in " + checkedMethod + " of " + className + "\");";
 		String statement = "{" + log + "$_ = $proceed($$);}";
 		return statement;
