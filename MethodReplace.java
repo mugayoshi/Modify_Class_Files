@@ -72,15 +72,19 @@ public class MethodReplace extends ModifyClassFiles {
 	public void iterateOneClass(CtClass cc, String className){
 		CtMethod[] methods = cc.getMethods();
 		for(int i = 0; i < methods.length; i++){
-			String[] methodPackages = methods[i].getLongName().split("\\.");
+			String longName = methods[i].getLongName();
+			// String[] methodPackages = longName.split("\\.");
 			String checkedMethod = methods[i].getName();
 			/*if(checkedLongName.contains("android")){
 				continue;
 			}*/
-			if(methodPackages[0].contains("java")){
+			if(longName.contains("java")){
 				continue;
 			}
-			if(methodPackages[0].contains("android") && methods[i].isEmpty()){
+			if(longName.contains("getString")){
+				continue;
+			}
+			if(longName.contains("android") && methods[i].isEmpty()){
 				
 				continue;
 			}
@@ -95,7 +99,8 @@ public class MethodReplace extends ModifyClassFiles {
 			final String statement = this.makeStatement(className, checkedMethodName);
 			cm.instrument(new ExprEditor() {
 				public void edit(MethodCall m) throws CannotCompileException{
-					m.replace(statement);
+					if(!m.getMethodName().contains("getString"))
+						m.replace(statement);
 				}
 			});
 			cc.writeFile();
@@ -115,7 +120,7 @@ public class MethodReplace extends ModifyClassFiles {
 	}
 	public String makeStatement(String className, String checkedMethod){
 		String log = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", "
-				+ "$0.toString() + \" is Executing following method in " + checkedMethod + " of " + className + "\");";
+				+ "following method is called from " + checkedMethod + " of " + className + "\");";
 		String statement = "{" + log + "$_ = $proceed($$);}";
 		return statement;
 	}
