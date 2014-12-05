@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 
 import javassist.*;
 import javassist.expr.ExprEditor;
@@ -20,7 +21,7 @@ public class MethodReplace extends ModifyClassFiles {
 		
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("Enter class names you're looking for: ");
+			System.out.print("Enter class names: ");
 			String c = br.readLine();
 			String[] cs = c.split(" ");
 			SearchClassFiles scf = new SearchClassFiles(cs);
@@ -40,7 +41,7 @@ public class MethodReplace extends ModifyClassFiles {
 					rep.iterateOneClass(cc, classPackageName);
 					//scf.insertCodesIntoAllMethods(classPackageName);//this should be changed
 				}
-				System.out.println("Insert Codes has Done");
+				System.out.println("Replacement has Done");
 			}else{
 				System.out.println("Done !");
 			}
@@ -81,11 +82,10 @@ public class MethodReplace extends ModifyClassFiles {
 			if(longName.contains("java")){
 				continue;
 			}
-			if(longName.contains("getString")){
+			/*if(longName.contains("android") && longName.contains("getString")){
 				continue;
-			}
+			}*/
 			if(longName.contains("android") && methods[i].isEmpty()){
-				
 				continue;
 			}
 			this.replaceCodes(className, checkedMethod, cc);
@@ -96,11 +96,14 @@ public class MethodReplace extends ModifyClassFiles {
 		try {
 			
 			CtMethod cm = cc.getDeclaredMethod(checkedMethodName);
-			final String statement = this.makeStatement(className, checkedMethodName);
+			//final String statement = this.makeStatement(className, checkedMethodName);
+			final Objeto obj = new Objeto(className, null, checkedMethodName);
 			cm.instrument(new ExprEditor() {
 				public void edit(MethodCall m) throws CannotCompileException{
-					if(!m.getMethodName().contains("getString"))
-						m.replace(statement);
+					//if(!m.getMethodName().contains("getString"))
+					//make statement
+					String statement = obj.makeStatementAndroid();
+					m.replace(statement);
 				}
 			});
 			cc.writeFile();
@@ -119,9 +122,14 @@ public class MethodReplace extends ModifyClassFiles {
 		
 	}
 	public String makeStatement(String className, String checkedMethod){
-		String log = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", "
-				+ "following method is called from " + checkedMethod + " of " + className + "\");";
-		String statement = "{" + log + "$_ = $proceed($$);}";
+		Random r = new Random();
+		int random = r.nextInt(1000);
+		String log_before = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.makeStatement(String)\", "
+				+ "\"ID: " + random + " Called from " + checkedMethod + " of " + className + "\");";
+		
+		String log_after = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.makeStatement(String)\", "
+				+ "\"ID: " +  random + " Backed to  " + checkedMethod + " of " + className + "\");";
+		String statement = "{" + log_before + "$_ = $proceed($$);" + log_after + "}";
 		return statement;
 	}
  	public ArrayList<String> getFieldInfo(String className){
