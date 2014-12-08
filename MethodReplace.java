@@ -39,7 +39,6 @@ public class MethodReplace extends ModifyClassFiles {
 					System.out.println(j + "/" + classNum+ " " +  classPackageName);
 					CtClass cc = cp.get(classPackageName);
 					rep.iterateOneClass(cc, classPackageName);
-					//scf.insertCodesIntoAllMethods(classPackageName);//this should be changed
 				}
 				System.out.println("Replacement has Done");
 			}else{
@@ -56,20 +55,7 @@ public class MethodReplace extends ModifyClassFiles {
 		}
 		
 	}
-	public void getReferencedClasses(String className, CtClass cc){
-		Collection<String> refClasses = cc.getRefClasses();
-		for(Iterator<String> i = refClasses.iterator(); i.hasNext();){
-			String str = i.next();
-			System.out.println(str);
-			if(str.contains("android")){
-				continue;
-			}else if(str.contains("java.lang")){
-				continue;
-			}
-			this.refClasses.add(str);
-		}
-		
-	}
+	
 	public void iterateOneClass(CtClass cc, String className){
 		CtMethod[] methods = cc.getMethods();
 		for(int i = 0; i < methods.length; i++){
@@ -96,7 +82,6 @@ public class MethodReplace extends ModifyClassFiles {
 		try {
 			
 			CtMethod cm = cc.getDeclaredMethod(checkedMethodName);
-			//final String statement = this.makeStatement(className, checkedMethodName);
 			final Objeto obj = new Objeto(className, null, checkedMethodName);
 			cm.instrument(new ExprEditor() {
 				public void edit(MethodCall m) throws CannotCompileException{
@@ -122,44 +107,6 @@ public class MethodReplace extends ModifyClassFiles {
 		}
 		
 	}
-	public String makeStatement(String className, String checkedMethod){
-		Random r = new Random();
-		int random = r.nextInt(1000);
-		String log_before = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.makeStatement(String)\", "
-				+ "\"ID: " + random + " Called from " + checkedMethod + " of " + className + "\");";
-		
-		String log_after = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.makeStatement(String)\", "
-				+ "\"ID: " +  random + " Backed to  " + checkedMethod + " of " + className + "\");";
-		String statement = "{" + log_before + "$_ = $proceed($$);" + log_after + "}";
-		return statement;
-	}
- 	public ArrayList<String> getFieldInfo(String className){
-		ClassPool cp = ClassPool.getDefault();
-		try {
-			CtClass cc = cp.get(className);
-			CtField[] fields = cc.getFields();
-			ArrayList<String> list = new ArrayList<String>();
-			for(int i = 0; i < fields.length; i++){
-				CtClass cls = fields[i].getType();
-				if(this.checkObject(cls)){
-					list.add(fields[i].getName());
-				}
-			}
-			return list;
-		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		
-	}
-	public boolean checkObject(CtClass cc){
-		if(cc.isPrimitive()){
-			return true;
-		}
-		String packageName  = cc.getPackageName();
-		if(packageName.contains("java.lang"))
-			return true;
-		return false;
-	}
+
+ 	
 }
