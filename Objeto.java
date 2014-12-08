@@ -6,14 +6,7 @@ public class Objeto {
 	String statement;
 	String checkedMethod;
 	ArrayList<String> methodCallList;
-	public Objeto(String c, String m){
-		this.className = c;
-		this.methodName = m;
-		this.fieldList = new ArrayList<String>();
-		this.statement = new String();
-		this.methodCallList = new ArrayList<String>();
-
-	}
+	String methodCallLog;
 	public Objeto(String c, String m, String checked){
 		this.className = c;
 		this.methodName = m;
@@ -21,7 +14,8 @@ public class Objeto {
 		this.statement = new String();
 		this.checkedMethod = checked;
 		this.methodCallList = new ArrayList<String>();
-
+		this.methodCallList.add("---- CLASS: " + className + " METHOD: " + this.checkedMethod + " ----");
+		this.methodCallLog = "---- CLASS: " + className + " METHOD: " + this.checkedMethod + " ----\n";
 	}
 	public void makeStatement(String methodCall){
 		Random r = new Random();
@@ -48,4 +42,9 @@ public class Objeto {
 		String statement = "{" + log_before + "$_ = $proceed($$);" + log_after + "}";
 		return statement;
 	}
+	public void register(String className, String methodName, int line){
+		String str = line  + " " + className + " " + methodName; 
+		//this.methodCallList.add(str);
+		this.methodCallLog += str + "\n";
+ 	}
 }
