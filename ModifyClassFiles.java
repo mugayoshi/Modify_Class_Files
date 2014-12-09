@@ -315,15 +315,18 @@ public class ModifyClassFiles {
 			for(int i = 0; i < paramNames.length; i++){
 				paramNames[i] = attr.variableName(i + pos);
 			}
+			return paramNames;
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block 
 			System.out.println("---- Get Method Parameter Not Found Exception in Method: " + cm.getName() + " in " + cc.getName() + " ----");
 			//e.printStackTrace();
+			return null;
 		}catch (NullPointerException e){
 			System.out.println("---- Get Method Parameter Null Pointer Exception in Method: " + cm.getName() + " in " + cc.getName() + " ----");
+			return null;
 		}
 		
-		return paramNames;
+		//return paramNames;
 			
 	}
 	
