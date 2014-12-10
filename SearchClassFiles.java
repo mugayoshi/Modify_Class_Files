@@ -105,12 +105,12 @@ public class SearchClassFiles extends ModifyClassFiles {
 				}
 				if(this.checkMethod(methodname)){
 					String tag = "android.util.Log.d(\"ModifyClassFiles\",";
-					String src1 = "\"Class: " + className + " Method: " + methodname + "\"";
+					String src1 = "\"CLASS: " + className + " METHOD: " + methodname + "\"";
 					//String src2 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"method: " + methodname + " \");";
 					String parameterInfo = makeParametersInfo(methods[i], cc);
-					String src = tag + src1 + "\"+" + parameterInfo +  ");";
-					System.out.println(src);//for debug
-					//methods[i].insertBefore(src);
+					String src = tag + src1 + parameterInfo +  ");";
+					//System.out.println(src);//for debug
+					methods[i].insertBefore(src);
 					this.successInsert++;
 				}
 				
@@ -140,22 +140,22 @@ public class SearchClassFiles extends ModifyClassFiles {
 		
 		if(parameterNames == null){
 			for(int i = 0; i < types.length; i++){
-				str += "\"args[" + i + "]:" + types[i].getName() + " = \"" + "$args[" + i + "]";
+				str += "+ \" args[" + i + "]:" + types[i].getName() + " = \" + $args[" + i + "] ";
 			}
-			System.out.println(str + " in makeParameterInfo");//for debug
+			//System.out.println(str + " in makeParameterInfo");//for debug
 			return str;
 		}
 		//String parameterInfo = new String();
 		if(parameterNames.length > 0){
 			//parameterInfo = "{";
 			for(int i = 0; i < parameterNames.length; i++){
-				str += "\"args[" + i + "]:"  + types[i].getName() + " " + parameterNames[i] + "= \""+ "$args[" + i + "]";
+				str += "+ \" args[" + i + "]:"  + types[i].getName() + " " + parameterNames[i] + "= \" + $args[" + i + "]";
 
 			}
 			//parameterInfo += "}";
 		}else{
 			//return "android.util.Log.d(\"ModifyClassFiles.makeParametersString\", \"No Parameter in This Method \");";
-			return "\"No Parameter\"";
+			return "+ \" args[]: No Parameter\"";
 
 		}
 		return str;

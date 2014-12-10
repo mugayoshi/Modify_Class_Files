@@ -1,4 +1,6 @@
 import java.util.*;
+
+import javassist.expr.MethodCall;
 public class Objeto {
 	String className;
 	String methodName;
@@ -29,20 +31,23 @@ public class Objeto {
 		}*/
 		System.out.println("make statement: " + this.statement);
 	}
-	public String makeStatementAndroid(String methodCall){
+	public String makeStatementAndroid(MethodCall m){
+		String methodCallName = m.getMethodName();
+		String methodCallClass = m.getClassName();
+		String signature = m.getSignature();
 		Random r = new Random();
 		int random = r.nextInt(1000);
-		this.methodCallList.add(methodCall);
+		this.methodCallList.add(methodCallName);
 		
-		String log_before = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.makeStatement(String)\", "
-				+ "\"ID: " + random + " before " + methodCall + " Called from " + this.checkedMethod + " of " + this.className + "\");";
+		String log_before = "if($0 != null) android.util.Log.d(\"ModifyClassFiles\", "
+				+ "\"ID: " + random + " Before " + methodCallName + " " + signature + " " + methodCallClass + " Called From " + this.checkedMethod + " In " + this.className + "\");";
 		
-		String log_after = "if($0 != null) android.util.Log.d(\"ModifyClassFiles.makeStatement(String)\", "
-				+ "\"ID: " +  random + " after " + methodCall + " Backed to  " + this.checkedMethod + " of " + this.className + "\");";
+		String log_after = "if($0 != null) android.util.Log.d(\"ModifyClassFiles\", "
+				+ "\"ID: " +  random + " After " + methodCallName + " Backed To  " + this.checkedMethod + " In " + this.className + "\");";
 		String statement = "{" + log_before + "$_ = $proceed($$);" + log_after + "}";
 		return statement;
 	}
-	public void register(String className, String methodName, int line){
+	public void register(String className, String methodName, int line){	
 		String str = line  + " " + className + " " + methodName; 
 		//this.methodCallList.add(str);
 		this.methodCallLog += str + "\n";

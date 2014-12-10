@@ -87,7 +87,7 @@ public class MethodReplace extends ModifyClassFiles {
 				public void edit(MethodCall m) throws CannotCompileException{
 					//if(!m.getMethodName().contains("getString"))
 					//make statement
-					String statement = obj.makeStatementAndroid(m.getMethodName());
+					String statement = obj.makeStatementAndroid(m);
 					m.replace(statement);
 				}
 			});
