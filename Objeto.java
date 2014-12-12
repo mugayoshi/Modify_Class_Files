@@ -40,7 +40,7 @@ public class Objeto {
 		this.methodCallList.add(methodCallName);
 		
 		String log_before = "if($0 != null) android.util.Log.d(\"ModifyClassFiles\", "
-				+ "\"ID: " + random + " Before " + methodCallName + " " + signature + " " + methodCallClass + " Called From " + this.checkedMethod + " In " + this.className + "\");";
+				+ "\"ID: " + random + " Before " + methodCallName + " [" + signature + "] of " + methodCallClass + " Called From " + this.checkedMethod + " In " + this.className + "\");";
 		
 		String log_after = "if($0 != null) android.util.Log.d(\"ModifyClassFiles\", "
 				+ "\"ID: " +  random + " After " + methodCallName + " Backed To  " + this.checkedMethod + " In " + this.className + "\");";

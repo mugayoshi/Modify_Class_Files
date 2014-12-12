@@ -1,7 +1,9 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 
 import javassist.*;
 public class GetMembers extends ModifyClassFiles {
@@ -13,25 +15,42 @@ public class GetMembers extends ModifyClassFiles {
 		GetMembers gm = new GetMembers();
 		gm.searchDirectory(gm.directoryPath);
 		int classNum = gm.clsPckgNames.size();
-
+		
+		String inputPackage = new String();
+		if(args.length == 1){
+			inputPackage = args[0]; 
+			System.out.println("Package Name : " + inputPackage + "\n");
+			System.out.println("Caution com.XXX.YYY -> you can input just XXX or YYY");
+		}
 		ClassPool cp = ClassPool.getDefault();
 		try {
-			for(int i = 0; i < classNum; i++){
-				String classname = gm.clsPckgNames.get(i);
-				if(gm.avoidItself(classname)){
-					//gm.insertCodesIntoAllMethods(classname);
-					CtClass cc = cp.get(classname);
-					//gm.getParameter(cc);
-					gm.getFieldInfo(cc);
+			if(args.length < 1){
+				for(int i = 0; i < classNum; i++){
+					String classname = gm.clsPckgNames.get(i);
+					if(gm.avoidItself(classname)){
+						CtClass cc = cp.get(classname);
+						gm.getFieldInfo(cc);
+					}
+				} 
+			}else{
+				for(int i = 0; i < classNum; i++){
+					String classname = gm.clsPckgNames.get(i);
+					if(classname.toLowerCase().contains(inputPackage) == false){
+						continue;
+					}
+					if(gm.avoidItself(classname)){
+						CtClass cc = cp.get(classname);
+						gm.getFieldInfo(cc);
+					}
 					
 				}
-			} 
+			}
 			System.out.println("DONE !!");
 
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}	
 	}
 	public void getParameter(CtClass cc){
 		System.out.println("---- Begin getParameter of " + cc.getName() + "----");
@@ -77,11 +96,9 @@ public class GetMembers extends ModifyClassFiles {
 			String className = cc.getName();
 			CtField[] fields = cc.getFields();
 			ArrayList<String> list = new ArrayList<String>();
-			System.out.println("--- Begin getFieldInfo of " + className + " ---");
+			System.out.println("\n--- Begin getFieldInfo of " + className + " ---");
 			for(int i = 0; i < fields.length; i++){
-				CtClass cls = fields[i].getType();
-				//String fieldName = fields[i].getName();
-				System.out.print(fields[i].getType().getName() + " " + fields[i].getName() + " ");
+				System.out.println("\t" + fields[i].getType().getName() + " " + fields[i].getName() + " ");
 				/*if(this.checkObject(cls) && cls != null){
 					list.add(fields[i].getName());
 					
