@@ -4,14 +4,14 @@ import java.io.InputStreamReader;
 
 import javassist.*;
 
-public class OneClassFile extends ModifyClassFiles {
+public class OneClassFile extends SearchClassFiles {
 
 	public OneClassFile(){
 		super();
 	}
 	public static void main(String[] args){
 		System.out.println("Modification for One Class File");
-		System.out.println("Enter package name (e.g. com.example.a)");
+		System.out.println("Enter Package Names (e.g. com.example.a)");
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		OneClassFile ocf = new OneClassFile();
 		

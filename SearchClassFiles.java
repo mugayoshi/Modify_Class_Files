@@ -21,6 +21,9 @@ public class SearchClassFiles extends ModifyClassFiles {
 		}
 
 	}
+	public SearchClassFiles(){
+		super();
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try{
