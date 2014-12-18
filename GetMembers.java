@@ -19,8 +19,11 @@ public class GetMembers extends ModifyClassFiles {
 		String inputPackage = new String();
 		if(args.length == 1){
 			inputPackage = args[0]; 
-			System.out.println("Package Name : " + inputPackage + "\n");
+			System.out.println("Input 	 : " + inputPackage + "\n");
 			System.out.println("Caution com.XXX.YYY -> you can input just XXX or YYY");
+		}else if(args.length > 1){
+			System.out.println("Only One input is allowed");
+			return;
 		}
 		ClassPool cp = ClassPool.getDefault();
 		try {
@@ -96,7 +99,7 @@ public class GetMembers extends ModifyClassFiles {
 			String className = cc.getName();
 			CtField[] fields = cc.getFields();
 			ArrayList<String> list = new ArrayList<String>();
-			System.out.println("\n--- Begin getFieldInfo of " + className + " ---");
+			System.out.println("\n--- Begin " + className + " ---");
 			for(int i = 0; i < fields.length; i++){
 				System.out.println("\t" + fields[i].getType().getName() + " " + fields[i].getName() + " ");
 				/*if(this.checkObject(cls) && cls != null){
@@ -104,7 +107,7 @@ public class GetMembers extends ModifyClassFiles {
 					
 				}*/
 			}
-			System.out.println("--- End getFieldInfo of " + className +  "---");
+			System.out.println("--- End " + className +  "---");
 			return list;
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
