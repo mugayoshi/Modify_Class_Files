@@ -1,9 +1,11 @@
 import javassist.*;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class SearchMethodsInClassFiles extends ModifyClassFiles {
+public class SearchMethods extends ModifyClassFiles {
 	String[] inputWords;
 	String[] inputClasses;
 	int matchMethodCount;
@@ -11,7 +13,7 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 	ArrayList<String> insertedClass;
 	ArrayList<String> insertedMethods;
 	
-	public SearchMethodsInClassFiles(String[] args) {
+	public SearchMethods(String[] args) {
 		// TODO Auto-generated constructor stub
 		super();
 		this.inputWords = new String[args.length];
@@ -29,24 +31,24 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 		// TODO Auto-generated method stub
 		try{
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("Enter methods names you're looking for: ");
-			String m = br.readLine();
+			System.out.print("Enter Methods Names: ");
+			String inputMethods = br.readLine();
 			String answer;
 			String c = new String();
-			SearchMethodsInClassFiles search;
-			if(m.length() < 1){
+			SearchMethods search;
+			if(inputMethods.length() < 1){
 				System.out.println("You have to enter method names");
 				return;
 			}
-			if(m.toLowerCase().equals("all")){
-				search = new SearchMethodsInClassFiles(m.split(" "));
+			if(inputMethods.toLowerCase().equals("all")){
+				search = new SearchMethods(inputMethods.split(" "));
 				search.searchDirectory(search.directoryPath);
 				search.showAllMethods();
 				return;
 			}
 			
-			search = new SearchMethodsInClassFiles(m.split(" "));
-			System.out.println("Do you wanna choose classes this program inserts codes ?");
+			search = new SearchMethods(inputMethods.split(" "));
+			System.out.println("Do you choose classes this program inserts codes ?");
 			System.out.print("Yes or No: ");
 			answer = br.readLine();
 			if(answer.toLowerCase().contains("y")){
@@ -60,12 +62,12 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 				search.searchClassFile(search.directoryPath);
 				search.showClasses();
 			}else{
-				System.out.println("I'm going to add all classes");
+				System.out.println("This is going to add all classes");
 				search.searchDirectory(search.directoryPath);
 			}
-			System.out.println("Searching Done !");
 			
 			int classNum = search.classFiles.size();
+			System.out.println("Search Done Class Number is " + classNum);
 			System.out.print("Do you wanna insert codes(1) or just look methods (2) ? --> ");
 			answer = br.readLine();
 			if(answer.equals("1")){
@@ -79,15 +81,23 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 					String classPackageName = search.clsPckgNames.get(i);
 					search.searchMethods(classPackageName);
 				}
+				
+				
 			}else{
 				System.out.println("this number is wrong !!");
 				return ;
 			}
 			
-			System.out.println("Count of Matches of Methods for "+ m + ": " +  search.matchMethodCount);
-			System.out.println("Count of Matches of Classes for" + c + ": " + search.matchClassCount);
+			System.out.println("Do you write this result to a text file ?");
+			System.out.print("Yes or No: ");
+			String write = br.readLine();
+			if(write.toLowerCase().contains("y")){
+				search.writeToFile(inputMethods.split(" "));
+				return ;
+			}
 			search.showInsertedClass();
 			search.showInsertedMethods();
+			return;
 		}catch (IOException e){
 			System.out.println("IOException Occurred");
 		}
@@ -129,8 +139,9 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			return ;
 		}
 		System.out.println("Number of Inserted Class is " + this.insertedMethods.size());
-		System.out.println("Do you wanna see all of them ?");
+		
 		try{
+			System.out.println("Do you wanna see all of them ?");
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			String ans = br.readLine();
 			if(ans.toLowerCase().contains("y")){
@@ -152,9 +163,10 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			return ;
 		}
 		System.out.println("Number of Inserted Methods is " + this.insertedMethods.size());
-		System.out.println("Do you wanna see all of them ?");
+		
 		try{
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Do you wanna see all of them ?");
 			String ans = br.readLine();
 			if(ans.toLowerCase().contains("y")){
 				for(int i = 0; i < this.insertedMethods.size(); i++){
@@ -296,13 +308,13 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 		File dir = new File(dirPath);
 		File[] files = dir.listFiles();
 		for(int i = 0; i < files.length; i++){
-			if(checkFile(files[i]) == false){
+			if(checkAndAddFile(files[i]) == false){
 				searchClassFile(files[i].getAbsolutePath());
 			}
 
 		}
 	}
-	public boolean checkFile(File file){
+	public boolean checkAndAddFile(File file){
 		String fileName = file.getName();
 		if(file.isDirectory()){
 			return false;
@@ -315,6 +327,47 @@ public class SearchMethodsInClassFiles extends ModifyClassFiles {
 			}
 		}
 		return true;
+	}
+	public void writeToFile(String[] input){
+		FileWriter writer;
+		String s = new String();
+		for(int i = 0; i < input.length; i++){
+			 s += input[i] + "_";
+		}
+		SimpleDateFormat simpleDate =  new SimpleDateFormat("dd_MM_HH_mm");
+		Date date = new Date();
+		String date_str = simpleDate.format(date);
+		String fileName = s + date_str + "_searchMethods.txt";
+		File file = new File(fileName);
+		try {
+			
+			writer = new FileWriter(file, true);
+			String strStart = "---- Start Classes ----\n";
+			writer.write(strStart);
+			for(int i = 0; i < this.insertedClass.size(); i++){
+				String str = "- " + this.insertedClass.get(i) + "\n";
+				writer.write(str);
+			}
+			String strEnd = "---- End Classes ----\n";
+			writer.write(strEnd);
+
+			strStart = "---- Start Methods ----\n";
+			writer.write(strStart);
+			for(int i = 0; i < this.insertedMethods.size(); i++){
+				String str = this.insertedMethods.get(i) + "\n";
+				writer.write(str);
+			}
+			strEnd = "---- End Methods ----\n";
+			writer.write(strEnd);
+			
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return;
 	}
 
 }
