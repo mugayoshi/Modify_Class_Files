@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import javassist.*;
+import javassist.bytecode.AccessFlag;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 public class MethodReplace extends ModifyClassFiles {
@@ -45,7 +46,9 @@ public class MethodReplace extends ModifyClassFiles {
 					int j = i + 1;
 					System.out.println(j + "/" + clsPckgs.size() + " " +  classPackageName);
 					CtClass cc = cp.get(classPackageName);
-					rep.iterateOneClass(cc, classPackageName);
+					rep.changeModifier(cc);
+					
+					//rep.iterateOneClass(cc, classPackageName);
 					clsPckgs.set(i, null);
 				}
 				System.out.println("Replacement has Done !!");
@@ -118,6 +121,42 @@ public class MethodReplace extends ModifyClassFiles {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
+		}
+		
+	}
+	
+	public void changeModifier(CtClass cc){
+		int mod = cc.getModifiers();
+		//if(mod == AccessFlag.PRIVATE || mod == AccessFlag.PROTECTED){
+		if(mod == AccessFlag.PRIVATE){
+			cc.setModifiers(AccessFlag.PUBLIC);
+		}
+		CtMethod[] methods = cc.getMethods();
+		int modMethod;
+		for(int i = 0; i < methods.length; i++){
+			CtMethod cm = methods[i];
+			//System.out.println(cm.getName() + " in changeModifier");
+			modMethod = cm.getModifiers();
+			//if(modMethod == AccessFlag.PRIVATE || modMethod == AccessFlag.PROTECTED){
+			if(modMethod == AccessFlag.PRIVATE){
+				System.out.println(cm.getName() + " <- private");
+				cm.setModifiers(AccessFlag.PUBLIC);
+			//	System.out.println("Change Modifier: " + cm.getLongName() + " in " + cc.getName());
+			}
+		}
+		try {
+			cc.writeFile();
+			cc.defrost();
+			return;
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CannotCompileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
