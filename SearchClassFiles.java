@@ -8,6 +8,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.AccessFlag;
 
 
 public class SearchClassFiles extends ModifyClassFiles {
@@ -31,21 +32,22 @@ public class SearchClassFiles extends ModifyClassFiles {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			String c = br.readLine();
 			String[] cs = c.split(" ");
-			SearchClassFiles mccf = new SearchClassFiles(cs);
-			mccf.searchClassFile(mccf.directoryPath);
-			mccf.showClasses();
+			SearchClassFiles scf = new SearchClassFiles(cs);
+			scf.searchClassFile(scf.directoryPath);
+			scf.showClasses();
 			System.out.println("Do you wanna insert codes ?");
 			System.out.print("yes or no: ");
 			
 			String answer = br.readLine();
 			if(answer.toLowerCase().contains("y") || answer.toLowerCase().equals("yes")){
-				int classNum = mccf.classFiles.size();
+				int classNum = scf.classFiles.size();
+				ClassPool cp = ClassPool.getDefault();
 				for(int i = 0; i < classNum; i++){
-					String classPackageName = mccf.clsPckgNames.get(i);
+					String classPackageName = scf.clsPckgNames.get(i);
 					int j = i + 1;
 					System.out.println(j + "/" + classNum+ " " +  classPackageName);
-					
-					mccf.insertCodesIntoAllMethods(classPackageName);
+					CtClass cc = cp.get(classPackageName);
+					scf.insertCodesIntoAllMethods(classPackageName, cc);
 				}
 				System.out.println("Insert Codes has Done");
 			}else{
@@ -53,6 +55,9 @@ public class SearchClassFiles extends ModifyClassFiles {
 			}
 		}catch(IOException e){
 			
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -81,12 +86,10 @@ public class SearchClassFiles extends ModifyClassFiles {
 		}
 		return true;
 	}
-	public void insertCodesIntoAllMethods(String className){
+	public void insertCodesIntoAllMethods(String className, CtClass cc){
 		//it insert codes into every method of this class
 		this.successInsert = 0;
-		ClassPool cp = ClassPool.getDefault();
 		try {
-			CtClass	cc = cp.get(className);
 			//cc.defrost();
 			if(cc.isInterface()){
 				return ;
@@ -109,10 +112,8 @@ public class SearchClassFiles extends ModifyClassFiles {
 				if(this.checkMethod(methodname)){
 					String tag = "android.util.Log.d(\"ModifyClassFiles\",";
 					String src1 = "\"CLASS: " + className + " METHOD: " + methodname + "\"";
-					//String src2 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"method: " + methodname + " \");";
 					String parameterInfo = makeParametersInfo(methods[i], cc);
 					String src = tag + src1 + parameterInfo +  ");";
-					//System.out.println(src);//for debug
 					methods[i].insertBefore(src);
 					this.successInsert++;
 				}
@@ -163,4 +164,23 @@ public class SearchClassFiles extends ModifyClassFiles {
 		}
 		return str;
 	}
+	
+	
+	public void changeModifier(CtClass cc){
+		int mod = cc.getModifiers();
+		if(mod == AccessFlag.PRIVATE || mod == AccessFlag.PROTECTED){
+			cc.setModifiers(AccessFlag.PUBLIC);
+		}
+		CtMethod[] methods = cc.getMethods();
+		int modMethod;
+		for(int i = 0; i < methods.length; i++){
+			//this.changeMethodModifier(cm);
+			CtMethod cm = methods[i];
+			modMethod = cm.getModifiers();
+			if(modMethod == AccessFlag.PRIVATE || modMethod == AccessFlag.PROTECTED){
+				cm.setModifiers(AccessFlag.PUBLIC);
+			}
+		}
+	}
+	
 }
