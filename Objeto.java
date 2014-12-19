@@ -7,16 +7,15 @@ public class Objeto {
 	ArrayList<String> fieldList;
 	String statement;
 	String checkedMethod;
-	ArrayList<String> methodCallList;
+//	ArrayList<String> methodCallList;
 	String methodCallLog;
 	public Objeto(String c, String m, String checked){
 		this.className = c;
 		this.methodName = m;
-		this.fieldList = new ArrayList<String>();
 		this.statement = new String();
 		this.checkedMethod = checked;
-		this.methodCallList = new ArrayList<String>();
-		this.methodCallList.add("---- CLASS: " + className + " METHOD: " + this.checkedMethod + " ----");
+//		this.methodCallList = new ArrayList<String>();
+//		this.methodCallList.add("---- CLASS: " + className + " METHOD: " + this.checkedMethod + " ----");
 		this.methodCallLog = "---- CLASS: " + className + " METHOD: " + this.checkedMethod + " ----\n";
 	}
 	public void makeStatement(String methodCall){
@@ -37,7 +36,7 @@ public class Objeto {
 		String signature = m.getSignature();
 		Random r = new Random();
 		int random = r.nextInt(1000);
-		this.methodCallList.add(methodCallName);
+//		this.methodCallList.add(methodCallName);
 		
 		String log_before = "if($0 != null) android.util.Log.d(\"ModifyClassFiles\", "
 				+ "\"ID: " + random + " Before " + methodCallName + " [" + signature + "] of " + methodCallClass + " Called From " + this.checkedMethod + " In " + this.className + "\");";
