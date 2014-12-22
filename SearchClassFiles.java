@@ -90,6 +90,9 @@ public class SearchClassFiles extends ModifyClassFiles {
 		//it insert codes into every method of this class
 		this.successInsert = 0;
 		try {
+			if((cc.getModifiers()) == AccessFlag.PRIVATE){
+				System.out.println("this class is private class");
+			}
 			//cc.defrost();
 			if(cc.isInterface()){
 				return ;

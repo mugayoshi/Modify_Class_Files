@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ public class MethodReplace extends ModifyClassFiles {
 			String c = br.readLine();
 			ArrayList<String> clsPckgs;
 			
-			if(c.toLowerCase().contains("all")){
+			if(c.toLowerCase().equals("all")){
 				rep.searchDirectory(rep.directoryPath);
 				clsPckgs = rep.clsPckgNames;
 				System.out.println("Class Num: " + clsPckgs.size());
@@ -36,7 +37,7 @@ public class MethodReplace extends ModifyClassFiles {
 				scf.showClasses();
 				clsPckgs = scf.clsPckgNames;
 			}
-			System.out.println("Do you wanna insert codes ?");
+			System.out.println("Do you wanna replace codes ?");
 			System.out.print("yes or no: ");
 			String answer = br.readLine();
 			if(answer.toLowerCase().contains("y") || answer.toLowerCase().equals("yes")){
@@ -46,9 +47,8 @@ public class MethodReplace extends ModifyClassFiles {
 					int j = i + 1;
 					System.out.println(j + "/" + clsPckgs.size() + " " +  classPackageName);
 					CtClass cc = cp.get(classPackageName);
-					rep.changeModifier(cc);
-					
-					//rep.iterateOneClass(cc, classPackageName);
+					//rep.changeModifier(cc);
+					rep.iterateOneClass(cc, classPackageName);
 					clsPckgs.set(i, null);
 				}
 				System.out.println("Replacement has Done !!");
