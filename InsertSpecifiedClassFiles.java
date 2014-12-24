@@ -1,36 +1,49 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.NotFoundException;
 
-import javassist.*;
-public class MethodReplaceSpecified extends MethodReplace {
+public class InsertSpecifiedClassFiles extends SearchClassFiles {
 
-	public static void main(String[] args){
-		System.out.println("Method Replacement for Specified Class Files");
-		System.out.println("Enter Exact Package Names (e.g. com.example.a)");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		MethodReplaceSpecified mrs = new MethodReplaceSpecified();
-		ClassPool cp = ClassPool.getDefault(); 
-			
-		try {
-			String c = br.readLine();
-			String[] cs = c.split(" ");
-			for(int i = 0; i < cs.length; i++){
-				//String classPackageName = mrs.clsPckgNames.get(i);
-				int j = i + 1;
-				System.out.println(j + "/" + cs.length + ": " +  cs[i]);
-				CtClass cc = cp.get(cs[i]);
-				mrs.iterateOneClass(cc, cs[i]);
-			}
-			System.out.println("DONE !!");
-					
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public InsertSpecifiedClassFiles(){
+		super();
 	}
+	public static void main(String[] args){
+		//System.out.println("Modification for One Class File");
+		//System.out.println("Enter Package Names (e.g. com.example.a)");
+		InsertSpecifiedClassFiles ocf = new InsertSpecifiedClassFiles();
+		ClassPool cp = ClassPool.getDefault();
+		for(int i = 0; i < args.length; i++){
+			if(args[i].contains("/")){
+				args[i] = splitInput(args[i]);
+			}
+			try {
+				CtClass cc = cp.get(args[i]);
+				ocf.insertCodesIntoAllMethods(args[i], cc);
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			//System.out.println("args" + i + " " + args[i]);
+		}
+		System.out.println("DONE ");
+	
+	}
+	public static String splitInput(String str){
+		String[] strs = str.split("/");
+		String input = new String();
+		for(int i = 1;i < strs.length; i++){
+			int index = strs[i].indexOf(".class");
+			if(index != -1){
+				strs[i] = strs[i].substring(0, index);
+			}
+			input += strs[i];
+			if(i != strs.length - 1)
+				input += ".";
+			
+		}
+		System.out.println("input = " + input);
+		return input;
+	}
+	
 }

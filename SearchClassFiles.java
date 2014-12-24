@@ -115,7 +115,7 @@ public class SearchClassFiles extends ModifyClassFiles {
 				if(this.checkMethod(methodname)){
 					String tag = "android.util.Log.d(\"ModifyClassFiles\",";
 					String src1 = "\"CLASS: " + className + " METHOD: " + methodname + "\"";
-					String parameterInfo = makeParametersInfo(methods[i], cc);
+					String parameterInfo = this.makeParametersInfo(methods[i], cc);
 					String src = tag + src1 + parameterInfo +  ");";
 					methods[i].insertBefore(src);
 					this.successInsert++;
