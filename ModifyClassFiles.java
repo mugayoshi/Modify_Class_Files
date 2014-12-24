@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javassist.*;
+import javassist.bytecode.AccessFlag;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
@@ -30,10 +31,12 @@ public class ModifyClassFiles {
 		// TODO Auto-generated method stub
 	
 		ModifyClassFiles modClassFile = new ModifyClassFiles();
+		modClassFile.directoryPath = modClassFile.directoryPath.replaceAll("\\.", "com");
 		modClassFile.searchDirectory(modClassFile.directoryPath);
 		int classNum = modClassFile.classFiles.size();
 		
 		System.out.println("Classes Number: " + modClassFile.classFiles.size());
+		ClassPool cp = ClassPool.getDefault();
 		for(int i = 0; i < classNum; i++){
 			String className = modClassFile.clsPckgNames.get(i);
 			int j = i + 1;
@@ -43,7 +46,14 @@ public class ModifyClassFiles {
 				break;
 			}
 			if(modClassFile.avoidItself(className)){
-				modClassFile.insertCodesIntoAllMethods(className);
+				try {
+					CtClass cc = cp.get(className);
+					modClassFile.insertCodesIntoAllMethods(className, cc);
+				} catch (NotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 		}
 		System.out.println("Writing Codes to Class Files has done !!");
@@ -102,13 +112,13 @@ public class ModifyClassFiles {
 		}
 		
 	}
-	public void insertCodesIntoAllMethods(String className){
+	public void insertCodesIntoAllMethods(String className, CtClass cc){
 		//it insert codes into every method of this class
 		this.successInsert = 0;
-		ClassPool cp = ClassPool.getDefault();
 		try {
-			CtClass	cc = cp.get(className);
-
+			if((cc.getModifiers()) == AccessFlag.PRIVATE){
+				System.out.println("this class is private class");
+			}
 			//cc.defrost();
 			if(cc.isInterface()){
 				return ;
@@ -117,29 +127,23 @@ public class ModifyClassFiles {
 			}
 			CtMethod[] methods = cc.getMethods();
 			for(int i = 0; i < methods.length; i++){
-				/*if(methods[i].isEmpty())
-					continue;*/
+				if(methods[i].isEmpty())
+					continue;
 				String methodname = methods[i].getName();
 				String longName = methods[i].getLongName();
-				//remove methods that Thread class has except run
 				boolean run = false;
 				if(methodname.contains("run")){
 					run = true;
 				}
 				if(longName.contains("Thread") && !run){
-					//System.out.println("This Methods is from Thread Class");
 					continue;
 				}
 				if(this.checkMethod(methodname)){
-					//String src1 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"ths class is \" + $0.toString() );";
-					String src1 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"class: " + className + " \");";
-					String src2 = "android.util.Log.d(\"ModifyClassFiles.insertCodes(String)\", \"method: " + methodname + " \");";
-					
-					String parameterInfo = makeParametersInfo(methods[i], cc);
-					String src = "{" + src1 + src2 + "}";
-					methods[i].insertBefore(parameterInfo);
+					String tag = "android.util.Log.d(\"ModifyClassFiles\",";
+					String src1 = "\"CLASS: " + className + " METHOD: " + methodname + "\"";
+					String parameterInfo = this.makeParametersInfo(methods[i], cc);
+					String src = tag + src1 + parameterInfo +  ");";
 					methods[i].insertBefore(src);
-					//System.out.println("Methods[" + i + "] = " + methodname + " has Succeeded in Inserting");
 					this.successInsert++;
 				}
 				
@@ -189,6 +193,7 @@ public class ModifyClassFiles {
 	}
 	
 	public void searchDirectory(String dirPath){
+		System.out.println(dirPath);
 		File dir = new File(dirPath);
 		File[] files = dir.listFiles();
 		for(int i = 0; i < files.length; i++){
@@ -218,7 +223,7 @@ public class ModifyClassFiles {
 			//System.out.println("Directory: " + file.getName());
 			return false;
 		}
-		
+
 		if(file.getName().contains(".class")){
 			addClassFile(file, superclass);
 		}
@@ -344,31 +349,31 @@ public class ModifyClassFiles {
 		}
 	}
 	public String makeParametersInfo(CtMethod cm, CtClass cc){
-		String[] parameters = getMethodParameterNames(cm, cc);
+		String[] parameterNames = getMethodParameterNames(cm, cc);
 		CtClass[] types = getParameterTypes(cm, cc);
 		String str = new String();
 		
-		if(parameters == null){
-			//log_template = "android.util.Log.d(";
-			//return "android.util.Log.d(\"ModifyClassFiles.makeParametersString\", \"Can't Get This Method's Info, Sorry\");";
-			return log_template + "\"ModifyClassFiles.makeParametersString\", \"Can't Get This Method's Info, Sorry\");";
+		if(parameterNames == null){
+			for(int i = 0; i < types.length; i++){
+				str += "+ \" args[" + i + "]:" + types[i].getName() + " = \" + $args[" + i + "] ";
+			}
+			//System.out.println(str + " in makeParameterInfo");//for debug
+			return str;
 		}
-		String parameterInfo = new String();
-		if(parameters.length > 0){
-			parameterInfo = "{";
-			for(int i = 0; i < parameters.length; i++){
-				str = "args[" + i + "]:"  + types[i].getName() + " " + parameters[i] + "= ";
-				//parameterInfo += "System.out.println(\"" + str + "\" + $args[" + i + "]);";
-				parameterInfo += "android.util.Log.d(\"ModifyClassFiles.makeParametersString\", \"" + str +  "\" + $args[" + i + "]);";
+		//String parameterInfo = new String();
+		if(parameterNames.length > 0){
+			//parameterInfo = "{";
+			for(int i = 0; i < parameterNames.length; i++){
+				str += "+ \" args[" + i + "]:"  + types[i].getName() + " " + parameterNames[i] + "= \" + $args[" + i + "]";
 
 			}
-			parameterInfo += "}";
+			//parameterInfo += "}";
 		}else{
 			//return "android.util.Log.d(\"ModifyClassFiles.makeParametersString\", \"No Parameter in This Method \");";
-			return log_template + "\"ModifyClassFiles.makeParametersString\", \"No Parameter in This Method \");";
+			return "+ \" args[]: No Parameter\"";
 
 		}
-		return parameterInfo;
+		return str;
 	}
 	public boolean avoidItself(String filename){
 		if(filename.toLowerCase().contains("modifyclassfiles")){
