@@ -48,7 +48,7 @@ public class SearchMethods extends ModifyClassFiles {
 			}
 			
 			search = new SearchMethods(inputMethods.split(" "));
-			System.out.println("Do you choose classes this program inserts codes ?");
+			System.out.println("Do you specify the classes ?");
 			System.out.print("Yes or No: ");
 			answer = br.readLine();
 			if(answer.toLowerCase().contains("y")){
@@ -62,7 +62,7 @@ public class SearchMethods extends ModifyClassFiles {
 				search.searchClassFile(search.directoryPath);
 				search.showClasses();
 			}else{
-				System.out.println("This is going to add all classes");
+				System.out.println("This is going to search all of the classes");
 				search.searchDirectory(search.directoryPath);
 			}
 			

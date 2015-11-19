@@ -75,7 +75,7 @@ public class ShowMethods extends SearchClassFiles {
 		try {
 			FileWriter writer = new FileWriter(this.file, true);
 			//System.out.println("----Begin Methods of " + classname + " -----");
-			String begin = "----Begin Methods of " + classname + " -----\n";
+			String begin = "---- Begin Methods of " + classname + " -----\n";
 			writer.write(begin);
 			CtClass cc = cp.get(classname);
 			CtMethod[] methods = cc.getMethods();
@@ -87,7 +87,7 @@ public class ShowMethods extends SearchClassFiles {
 					writer.write(str);
 				}
 			}
-			String end = "----End Methods of " + classname + " -----\n";
+			String end = "---- End Methods of " + classname + " -----\n";
 			writer.write(end);
 			writer.close();
 			

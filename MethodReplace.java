@@ -59,7 +59,7 @@ public class MethodReplace extends ModifyClassFiles {
 			
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,7 +96,7 @@ public class MethodReplace extends ModifyClassFiles {
 		try {
 			
 			CtMethod cm = cc.getDeclaredMethod(checkedMethodName);
-			final Objeto obj = new Objeto(className, null, checkedMethodName);
+			final InsertedLog obj = new InsertedLog(className, null, checkedMethodName);
 			cm.instrument(new ExprEditor() {
 				public void edit(MethodCall m) throws CannotCompileException{
 					//if(!m.getMethodName().contains("getString"))
@@ -111,7 +111,7 @@ public class MethodReplace extends ModifyClassFiles {
 		} catch (NotFoundException e) {
 			System.out.println("Not Found Exception " + checkedMethodName + " in " + className);
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			return;
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block

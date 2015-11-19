@@ -28,13 +28,16 @@ public class SelectPackage extends ModifyClassFiles {
 			System.out.print("Do you insert codes ?: ");
 			String ans = br.readLine();
 			if(ans.toLowerCase().contains("y")){
+				ClassPool cp = ClassPool.getDefault();
+				CtClass cc;
 				for(int i = 0; i < classNum; i++){
 					String classname = sp.clsPckgNames.get(i);
 					if(classname.contains(input_class) == false){
 						continue;
 					}
 					if(sp.avoidItself(classname)){
-						sp.insertCodesIntoAllMethods(classname);
+						cc = cp.get(classname);
+						sp.insertCodesIntoAllMethods(classname, cc);
 					}
 
 				}
@@ -60,6 +63,9 @@ public class SelectPackage extends ModifyClassFiles {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 				
@@ -70,7 +76,7 @@ public class SelectPackage extends ModifyClassFiles {
 		try {
 			FileWriter writer = new FileWriter(this.file, true);
 			//System.out.println("----Begin Methods of " + classname + " -----");
-			String begin = "----Begin Methods of " + classname + " -----\n";
+			String begin = "---- Begin Methods of " + classname + " -----\n";
 			writer.write(begin);
 			CtClass cc = cp.get(classname);
 			CtMethod[] methods = cc.getMethods();
@@ -82,7 +88,7 @@ public class SelectPackage extends ModifyClassFiles {
 					writer.write(str);
 				}
 			}
-			String end = "----End Methods of " + classname + " -----\n";
+			String end = "---- End Methods of " + classname + " -----\n";
 			writer.write(end);
 			writer.close();
 			

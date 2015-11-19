@@ -76,12 +76,12 @@ public class ExtractMethodCalls{
 	public String Extract(String className,String checkedMethodName, CtClass cc){
 		try {
 			CtMethod cm = cc.getDeclaredMethod(checkedMethodName);
-			final Objeto obj = new Objeto(className, null, checkedMethodName);
+			final InsertedLog lg = new InsertedLog(className, null, checkedMethodName);
 			cm.instrument(new ExprEditor() {
 				public void edit(MethodCall m) throws CannotCompileException{
 					//if(!m.getMethodName().contains("getString"))
 					//obj.register
-					obj.register(m.getClassName(), m.getMethodName(), m.getLineNumber());
+					lg.register(m.getClassName(), m.getMethodName(), m.getLineNumber());
 					m.replace("$_ = $proceed($$);");
 				}
 			});
@@ -90,7 +90,7 @@ public class ExtractMethodCalls{
 			cc.defrost();
 			//this.objetos.add(obj);
 			//methodCalls.add(obj.methodCallLog);
-			return obj.methodCallLog;
+			return lg.methodCallLog;
 			
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
